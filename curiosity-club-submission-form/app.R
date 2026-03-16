@@ -31,8 +31,8 @@ date_df <- as.data.frame(date_list)  %>%
     date = date_list
   ) %>%
   mutate(
-    day_label = wday(this_year, label = TRUE), # get weekday label
-    day_of_month = day(date_list)              # get day of month
+    day_label = wday(date, label = TRUE), # get weekday label
+    day_of_month = day(date)              # get day of month
   )
 
 # pull out first friday of each month
