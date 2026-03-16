@@ -66,7 +66,7 @@ ui <- fluidPage(
     
     textInput(inputId = "first_name",label = "First Name:"),
     
-    textInput(inputId = "discord_name", label = "Discord Handle:"),
+    textInput(inputId = "discord_name", label = "Discord Username:"),
     
     # p("Info about your presentation"),
     
@@ -91,14 +91,16 @@ ui <- fluidPage(
     
     textAreaInput(inputId = "description", 
                   label = "Please describe your presentation in a few sentences.",
-                  width = "75%"),
-    
-    textInput(inputId = "note", label = "Anything else we should know?"),
+                  width = "100%"),
     
     checkboxGroupInput(inputId = "date_available", 
                        label = "Select which date(s) you are available to virtually present:",
                        choices = next_six_fridays_label),
+    
+    textInput(inputId = "note", label = "Anything else we should know?"),
+    
     br(),
+    
     actionButton(inputId = "submission", 
                  label = "Click here to Submit!"),
     
