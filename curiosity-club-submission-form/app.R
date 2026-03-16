@@ -48,7 +48,7 @@ third_fridays <- date_df %>%
 # put list of first and third fridays together, then pull the first six to display in app
 next_fridays_year <- c(first_fridays, third_fridays) %>% sort()
 next_six_friday_dates <- next_fridays_year %>% head(6)
-next_six_fridays_label <- glue("Friday, {month(next_six_friday_dates, label = TRUE)} {day(next_six_friday_dates)} from 7-8:30pm")
+next_six_fridays_label <- glue("Friday, {month(next_six_friday_dates, label = TRUE, abbr = FALSE)} {day(next_six_friday_dates)} from 7-8:30pm")
 
 ################################################################################
 
@@ -58,9 +58,9 @@ ui <- fluidPage(
     # Application title
     titlePanel("Curiosity Club Submission Form"),
     br(),
-    h4("Please submit this form if you wish to present at Brocialize Curiosity Club."),
+    h4("Please submit this form if you want to present at Brocialize Curiosity Club."),
     # br(),
-    p("Curiosity Club meets on the first and third Friday of each month, from 7-8:30pm. You must be a member of the Brocialize 
+    p("Curiosity Club meets on the first and third Friday of each month, from 7-8:30pm in the Brocialize Discord server curiosity-club meeting channel. You must be a member of the Brocialize 
       discord server to attend and to present. Please message a moderator if you need help or have any questions."),
     br(),
     
@@ -73,9 +73,9 @@ ui <- fluidPage(
     selectizeInput(inputId = "presentation_topic_group",
                    label = "Select the type of presentation:",
                    choices = c("PowerPoint/Slides Presentation",
-                               "Whiteboard Presentation/Discussion",
+                               "Whiteboard Presentation",
                                "Oral only Presentation",
-                               "Interactive Game/Quiz",
+                               "Interactive Quiz/Game",
                                "Other")),
     selectInput(inputId = "length_of_presentation",
                 label = "Select the approximate length of your presentation:",
@@ -96,41 +96,22 @@ ui <- fluidPage(
     textInput(inputId = "note", label = "Anything else we should know?"),
     
     checkboxGroupInput(inputId = "date_available", 
-                       label = "Select which date(s) you are available to present:",
+                       label = "Select which date(s) you are available to virtually present:",
                        choices = next_six_fridays_label),
-    
+    br(),
     actionButton(inputId = "submission", 
-                 label = "Submit Here!"),
+                 label = "Click here to Submit!"),
     
     br(),
+    br(),
     br()
-    
-    
-    
-    
-    # textInput(inputId = "pronouns", label = "Pronouns")
-    # textInput(inputId = "email", label = "Email address")
-    
-              
-    # sidebarLayout(
-    #     sidebarPanel(
-    #         sliderInput("bins",
-    #                     "Number of bins:",
-    #                     min = 1,
-    #                     max = 50,
-    #                     value = 30)
-    #     ),
-    # 
-    #     # Show a plot of the generated distribution
-    #     mainPanel(
-    #        plotOutput("distPlot")
-    #     )
-    # )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
+  # df_answers 
+  
     # output$distPlot <- renderPlot({
     #     # generate bins based on input$bins from ui.R
     #     x    <- faithful[, 2]
