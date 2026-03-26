@@ -111,18 +111,26 @@ ui <- fluidPage(
 )
 
 
-# {first_name} aka {discord_name} has submitted an idea for a {presentation_type}, length: {length_of_presentation}.
+# 
 server <- function(input, output) {
   
   msg <- compose_email(
     body = md(
       glue::glue(
-        "Hi there,
+        "Hello,
         
-        Testing email on connect cloud!
-  
-      Best,<br>
-      Emerson's App lol"
+        {first_name} aka {discord_name} has submitted an idea for a {presentation_type}, called {title}, with length: {length_of_presentation}.
+        
+        Here is their description:
+        {description}
+        
+        They are available to present on the following dates:
+        
+        {date_available}.
+        
+        Woo!
+        
+        "
       )
     )
   )
