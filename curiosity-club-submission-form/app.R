@@ -17,6 +17,7 @@ library(dplyr)
 library(glue)
 library(blastula)
 library(rsconnect)
+library(shinyalert)
 
 ################################################################################
 
@@ -78,6 +79,7 @@ ui <- fluidPage(
                                "Oral only Presentation",
                                "Interactive Quiz/Game",
                                "Other")),
+    
     selectInput(inputId = "length_of_presentation",
                 label = "Select the approximate length of your presentation:",
                 choices = c("5 min",
@@ -128,7 +130,11 @@ server <- function(input, output) {
         
         They are available to present on the following dates:
         
-        {input$date_available}.
+          {input$date_available}
+        
+        And they would like to note (if any):
+        
+          {input$note}
         
         Woo!
         
@@ -151,6 +157,7 @@ server <- function(input, output) {
         credentials = my_email_creds
       )
     
+    shinyalert(title = "Thank you!", type = "success")
     # session$sendCustomMessage(type = 'testmessage',
     #                           message = 'Thank you for submitting a presentation for Brocialize Curiosity Club')
     
