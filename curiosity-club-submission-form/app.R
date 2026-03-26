@@ -134,7 +134,7 @@ server <- function(input, output) {
         
         They are available to present on the following dates:
         
-          {paste(input$date_available, collapse = ',')}
+          {paste(input$date_available, collapse = ', <br>')}
         
         And they would like to note (if any):
         
