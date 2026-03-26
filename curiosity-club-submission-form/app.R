@@ -121,7 +121,7 @@ server <- function(input, output) {
         glue::glue(
           "Hello,
         
-        {input$first_name} aka {discord_name} has submitted an idea for a {input$presentation_type}, called {input$title}, with length: {input$length_of_presentation}.
+        {input$first_name} aka {input$discord_name} has submitted an idea for a {input$presentation_type}, called {input$title}, with length: {input$length_of_presentation}.
         
         Here is their description:
         {input$description}
