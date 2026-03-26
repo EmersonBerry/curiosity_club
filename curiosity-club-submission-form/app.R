@@ -113,11 +113,13 @@ ui <- fluidPage(
 
 # 
 server <- function(input, output) {
-  
-  msg <- compose_email(
-    body = md(
-      glue::glue(
-        "Hello,
+
+  observeEvent(input$submission, {
+    
+    msg <- compose_email(
+      body = md(
+        glue::glue(
+          "Hello,
         
         {input$first_name} aka {discord_name} has submitted an idea for a {input$presentation_type}, called {input$title}, with length: {input$length_of_presentation}.
         
@@ -131,11 +133,9 @@ server <- function(input, output) {
         Woo!
         
         "
+        )
       )
     )
-  )
-
-  observeEvent(input$submission, {
     
     my_email_creds <- creds_envvar(
       user = Sys.getenv('MY_GMAIL_ACCOUNT'),
