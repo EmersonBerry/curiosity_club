@@ -15,6 +15,7 @@ library(shiny)
 library(lubridate)
 library(dplyr)
 library(glue)
+library(blastula)
 library(rsconnect)
 
 ################################################################################
@@ -70,7 +71,7 @@ ui <- fluidPage(
     
     # p("Info about your presentation"),
     
-    selectizeInput(inputId = "presentation_topic_group",
+    selectizeInput(inputId = "presentation_type",
                    label = "Select the type of presentation:",
                    choices = c("PowerPoint/Slides Presentation",
                                "Whiteboard Presentation",
@@ -109,21 +110,44 @@ ui <- fluidPage(
     br()
 )
 
-# Define server logic required to draw a histogram
-server <- function(input, output) {
 
-  # df_answers 
+# {first_name} aka {discord_name} has submitted an idea for a {presentation_type}, length: {length_of_presentation}.
+server <- function(input, output) {
   
-    # output$distPlot <- renderPlot({
-    #     # generate bins based on input$bins from ui.R
-    #     x    <- faithful[, 2]
-    #     bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    # 
-    #     # draw the histogram with the specified number of bins
-    #     hist(x, breaks = bins, col = 'darkgray', border = 'white',
-    #          xlab = 'Waiting time to next eruption (in mins)',
-    #          main = 'Histogram of waiting times')
-    # })
+  msg <- compose_email(
+    body = md(
+      glue::glue(
+        "Hi there,
+        
+        Testing email on connect cloud!
+  
+      Best,<br>
+      Emerson's App lol"
+      )
+    )
+  )
+
+  observeEvent(input$submission, {
+    
+    my_email_creds <- creds_envvar(
+      user = Sys.getenv('MY_GMAIL_ACCOUNT'),
+      pass_envvar = 'SMTP_PASSWORD', 
+      provider = 'gmail'
+    )
+    
+    msg %>% 
+      smtp_send(
+        from = Sys.getenv('MY_GMAIL_ACCOUNT'),
+        to = Sys.getenv('MY_GMAIL_ACCOUNT'),
+        subject = "Testing the `smtp_send()` function",
+        credentials = my_email_creds
+      )
+    
+    # session$sendCustomMessage(type = 'testmessage',
+    #                           message = 'Thank you for submitting a presentation for Brocialize Curiosity Club')
+    
+  })
+  
 }
 
 # Run the application 
