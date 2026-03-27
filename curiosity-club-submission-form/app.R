@@ -44,9 +44,6 @@ gs4_deauth()
 # Read in current google sheet
 gs_current <- read_sheet(gs_link, sheet = 1)
 
-# authenticate to google sheets
-# googlesheets4::gs4_auth(token = Sys.getenv("CC_KEY"), email = Sys.getenv("MY_GMAIL_ACCOUNT"))
-
 ################################################################################
 # Date setup
 
@@ -198,6 +195,9 @@ server <- function(input, output) {
       "dates_available" = paste(input$date_available, collapse = ', '),
       "note" = input$note
     )
+    
+    # authenticate to google sheets
+    googlesheets4::gs4_auth(token = Sys.getenv("CC_KEY"), email = Sys.getenv("MY_GMAIL_ACCOUNT"))
     
     # append new row to existing sheet
     sheet_append(ss = gs_link,
