@@ -27,10 +27,7 @@ library(shinyalert)
 library(googlesheets4)
 
 ################################################################################
-# Gmail and google sheets setup
-
-# link to google sheet
-gs_link <- "https://docs.google.com/spreadsheets/d/1lnVsoWWl3y-KrtjkLuOg1WNq7nuDYYMx1TbTb8qhvvw/edit?usp=sharing"
+### Gmail setup ###
 
 # set email credentials
 my_email_creds <- creds_envvar(
@@ -39,10 +36,27 @@ my_email_creds <- creds_envvar(
   provider = 'gmail'
 )
 
-gs4_deauth()
+### Google sheets setup ###
+
+# options(
+#   # whenever there is one account token found, use the cached token
+#   gargle_oauth_email = TRUE,
+#   # specify auth tokens should be stored in a hidden directory ".secrets"
+#   gargle_oauth_cache = ".secrets"
+# )
+
+# link to google sheet
+gs_link <- "https://docs.google.com/spreadsheets/d/1U50l6FwEzl__fjiBWZorshf2Qymi4QwP-uU10Bnm-iA/edit?gid=0#gid=0"
+
+# gs4_deauth()
+
+# authenticate to google sheets
+googlesheets4::gs4_auth(token = Sys.getenv("CC_KEY"), email = Sys.getenv("MY_GMAIL_ACCOUNT"))
 
 # Read in current google sheet
 gs_current <- read_sheet(gs_link, sheet = 1)
+
+# sheet_id <- googledrive::drive_get("curiosity-club-submissions")$id
 
 ################################################################################
 # Date setup
@@ -195,9 +209,6 @@ server <- function(input, output) {
       "dates_available" = paste(input$date_available, collapse = ', '),
       "note" = input$note
     )
-    
-    # authenticate to google sheets
-    googlesheets4::gs4_auth(token = Sys.getenv("CC_KEY"), email = Sys.getenv("MY_GMAIL_ACCOUNT"))
     
     # append new row to existing sheet
     sheet_append(ss = gs_link,
