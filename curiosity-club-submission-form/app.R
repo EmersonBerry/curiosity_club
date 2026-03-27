@@ -11,6 +11,12 @@
 #    https://shiny.posit.co/
 #
 
+### to do ###
+# link to google sheet to track
+# exclude friday's within two days
+# add more helper text
+# colors etc make it look nicer
+
 library(shiny)
 library(lubridate)
 library(dplyr)
@@ -18,16 +24,39 @@ library(glue)
 library(blastula)
 library(rsconnect)
 library(shinyalert)
+library(googlesheets4)
 
 ################################################################################
+# Gmail and google sheets setup
+
+# link to google sheet
+gs_link <- "https://docs.google.com/spreadsheets/d/1lnVsoWWl3y-KrtjkLuOg1WNq7nuDYYMx1TbTb8qhvvw/edit?usp=sharing"
+
+# authenticate to google sheets
+googlesheets4::gs4_auth(token = Sys.getenv("CC_KEY"), email = Sys.getenv("MY_GMAIL_ACCOUNT"))
+
+# set email credentials
+my_email_creds <- creds_envvar(
+  user = Sys.getenv('MY_GMAIL_ACCOUNT'),
+  pass_envvar = 'SMTP_PASSWORD', 
+  provider = 'gmail'
+)
+
+# Read in current google sheet
+gs_current <- read_sheet(gs_link, sheet = 1)
+
+################################################################################
+# Date setup
 
 # Curiosity club meets on the first and third Friday of the month
 # Find the next 6 dates of Curiosity Club
 
+# create df of all dates for the next year
 today_dte <- today()
 one_year_away <- today_dte + 365
-date_list <- seq(as.Date(today_dte), as.Date(one_year_away), by = "day") # df of all dates for the next year
+date_list <- seq(as.Date(today_dte), as.Date(one_year_away), by = "day") 
 
+# get day of week and day of month
 date_df <- as.data.frame(date_list)  %>% 
   rename(
     date = date_list
@@ -37,22 +66,23 @@ date_df <- as.data.frame(date_list)  %>%
     day_of_month = day(date)              # get day of month
   )
 
-# pull out first friday of each month
+# pull out first Friday of each month
 first_fridays <- date_df %>% 
   filter(day_label == "Fri" & day_of_month <= 7) %>% 
   pull(date)
 
-# pull out third friday of each month
+# pull out third Friday of each month
 third_fridays <- date_df %>% 
   filter(day_label == "Fri" & day_of_month <= 21 & day_of_month > 14) %>% 
   pull(date)
 
-# put list of first and third fridays together, then pull the first six to display in app
+# put list of first and third Fridays together, then pull the first six to display in app
 next_fridays_year <- c(first_fridays, third_fridays) %>% sort()
 next_six_friday_dates <- next_fridays_year %>% head(6)
 next_six_fridays_label <- glue("Friday, {month(next_six_friday_dates, label = TRUE, abbr = FALSE)} {day(next_six_friday_dates)} from 7-8:30pm")
 
 ################################################################################
+### App Code ###
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -116,12 +146,15 @@ ui <- fluidPage(
 # 
 server <- function(input, output) {
 
+  
   observeEvent(input$submission, {
     
-    msg <- compose_email(
-      body = md(
-        glue::glue(
-          "Hello,
+    # if(input$discord_name != "" & input$title != "" & input$date_availabe != ""){
+    msg <-  
+      compose_email(
+        body = md(
+          glue::glue(
+            "Hello,
         
         {input$first_name} ({input$discord_name}) has submitted an idea for a {input$presentation_type}, 
         
@@ -140,18 +173,7 @@ server <- function(input, output) {
         
           {input$note}
         
-        Woo!
-        
-        "
-        )
-      )
-    )
-    
-    my_email_creds <- creds_envvar(
-      user = Sys.getenv('MY_GMAIL_ACCOUNT'),
-      pass_envvar = 'SMTP_PASSWORD', 
-      provider = 'gmail'
-    )
+        ")))
     
     msg %>% 
       smtp_send(
@@ -162,8 +184,23 @@ server <- function(input, output) {
       )
     
     shinyalert(title = "Thank you!", type = "success")
-    # session$sendCustomMessage(type = 'testmessage',
-    #                           message = 'Thank you for submitting a presentation for Brocialize Curiosity Club')
+    
+    new_submission <- data.frame(
+      "date_submitted" = now(),
+      "name" = input$first_name,
+      "username" = input$discord_name,
+      "type" = input$presentation_type,
+      "length" = input$length_of_presentation,
+      "title" = input$title,
+      "description" = input$description,
+      "dates_available" = paste(input$date_available, collapse = ', '),
+      "note" = input$note
+    )
+    
+    # append new row to existing sheet
+    sheet_append(ss = gs_link,
+                 data = new_submission,
+                 sheet = 1)
     
   })
   
