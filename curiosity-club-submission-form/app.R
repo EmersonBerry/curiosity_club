@@ -32,9 +32,6 @@ library(googlesheets4)
 # link to google sheet
 gs_link <- "https://docs.google.com/spreadsheets/d/1lnVsoWWl3y-KrtjkLuOg1WNq7nuDYYMx1TbTb8qhvvw/edit?usp=sharing"
 
-# authenticate to google sheets
-googlesheets4::gs4_auth(token = Sys.getenv("CC_KEY"), email = Sys.getenv("MY_GMAIL_ACCOUNT"))
-
 # set email credentials
 my_email_creds <- creds_envvar(
   user = Sys.getenv('MY_GMAIL_ACCOUNT'),
@@ -42,8 +39,13 @@ my_email_creds <- creds_envvar(
   provider = 'gmail'
 )
 
+gs4_deauth()
+
 # Read in current google sheet
 gs_current <- read_sheet(gs_link, sheet = 1)
+
+# authenticate to google sheets
+# googlesheets4::gs4_auth(token = Sys.getenv("CC_KEY"), email = Sys.getenv("MY_GMAIL_ACCOUNT"))
 
 ################################################################################
 # Date setup
